@@ -553,6 +553,7 @@ module.exports.getPost = (req,res,next)=>{
         blogHtml : null,
         blogTitle : null,
         blogImageSrc : null,
+        slug : null
     }
 
     function query(func){
@@ -564,6 +565,7 @@ module.exports.getPost = (req,res,next)=>{
                     blog.blogHtml = data.html;
                     blog.blogTitle = data.title;
                     blog.blogImageSrc = data.coverImage;
+                    blog.slug = data.slug;
                 }
                 return func();
             });
@@ -575,6 +577,7 @@ module.exports.getPost = (req,res,next)=>{
                     blog.blogHtml = myunescape(result[0].html);
                     blog.blogTitle = myunescape(result[0].title);
                     blog.blogImageSrc = result[0].coverImage;
+                    blog.slug = result[0].slug;
                 }
                 return func();
             });
