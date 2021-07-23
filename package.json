@@ -1,0 +1,22 @@
+{
+  "name": "blog-easy",
+  "version": "1.0.0",
+  "description": "blog-easy integrates a full automated blog system to a website without having to write any code",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "javascript",
+    "blog",
+    "cms",
+    "nodejs"
+  ],
+  "author": "sahil raj",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.13.2",
+    "mysql": "^2.18.1"
+  }
+}
