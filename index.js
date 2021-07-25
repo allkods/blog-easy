@@ -58,29 +58,6 @@ const table = `CREATE TABLE IF NOT EXISTS blogs(
 
 // DEPENDENCIES FUNCTION
 
-// Function for image error handling
-function imageErrorChecker(image,func){
-    var allowed=['jpg','png','jpeg'];
-
-    for(var i=0; i<image.length; i++){
-
-    var type=image[i].name.split('.');
-    type=type[type.length - 1].toLowerCase();
-    var per = allowed.indexOf(type);
-
-    if(per === -1){
-        if(i === 0){
-            return func({status:'error',msg:`File type of Cover Image is invalid`});
-        }else{
-            return func({status:'error',msg:`File type of one or images is invalid`});
-        }
-    }else{
-        return func({status:'success',msg:'All files are valid'});
-    }
-
-    }
-}
-
 // For converting camel case string to css type
 function cssConverter(data){
     var str="";
@@ -107,6 +84,7 @@ function getStyle(data){
     return str;
 }
 
+// To check whether undefined or null
 function empty(data){
     if(data === undefined || data === null)
     return true;
@@ -249,7 +227,7 @@ function htmlConverter(data,slug){
     return str;
 }
 
-// For converting date to readable format
+// For converting date to readable date format
 function getRedableDate(){
 
     var dateOb=new Date;
@@ -287,20 +265,20 @@ function getRedableDate(){
     
 }
     
-// To myescape quotes for mysql
+// To escape quotes for mysql
 function myescape(str){
     var newstr;
-    newstr = str.replace(/\'/g,'<%single%>')
-                .replace(/\"/g,'<%double%>');
+    newstr = str.replace(/\'/g,'<%%s%>')
+                .replace(/\"/g,'<%%d%>');
     return newstr;
     
 }
     
-// To myunescape quotes for mysql
+// To unescape quotes for mysql
 function myunescape(str){
     var newstr = str;
-    newstr = newstr.replace(/<%single%>/g,"'")
-                .replace(/<%double%>/g,'"');
+    newstr = newstr.replace(/<%%s%>/g,"'")
+                .replace(/<%%d%>/g,'"');
     return newstr;
     
 }
@@ -509,6 +487,7 @@ module.exports.upload = (req,res,next)=>{
                 title = title.substring(1);
             }
 
+            title = title.replace(/(\n|<br>)/g,' ');
             slug=title
             .replace(/[\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E]/g,"")
             .replace(/[ ]+/g,'-')
