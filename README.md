@@ -91,6 +91,8 @@ app.get('/blog',getBlog,(req,res)=>{
 
     res.josn({...res.blog});
 
+    // Dont't forget to use JSON.parse() method on Client Side
+
 });
 ```
 
@@ -162,7 +164,7 @@ To know how to create Edit button inside view see -> [setting up views](https://
 app.post('/post-delete',deletePost,(req,res)=>{
 
     res.redirect('/blog');
-    
+
 });
 ```
 ### For creating its API
@@ -179,7 +181,7 @@ app.post('/post-delete',deletePost,(req,res)=>{
 
 To know how to create Delete button inside view see -> [setting up views](https://allkods.in/projects/blog-easy#How_to_create_delete_button)
 
-## How to use variables which are automatically passed to the views by [blog-essy](https://github.com/allkods/blog-easy)
+## How to use variables which are automatically passed to the views
 ---
 Read full documentation here -> [setting up views](https://allkods.in/projects/blog-easy)
 
