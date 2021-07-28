@@ -182,7 +182,6 @@ app.post('/post-delete',deletePost,(req,res)=>{
 To know how to create Delete button inside view see -> [setting up views](https://allkods.in/projects/blog-easy#How_to_create_delete_button)
 
 ## How to use variables which are automatically passed to the views
----
 Read full documentation here -> [setting up views](https://allkods.in/projects/blog-easy)
 
 ## TO-DO
