@@ -119,6 +119,8 @@ app.get('/blog/:slug',getPost,(req,res)=>{
 
     res.json({...res.blog});
 
+    // Dont't forget to use JSON.parse() method on Client Side
+
 });
 ```
 > `res.blog` contains 4 variables as follows:
@@ -133,13 +135,19 @@ To know how to set up the frontend see -> [setting up views](https://allkods.in/
 ---
 ```javascript
 app.get('/blog/:slug/edit',getPost,(req,res)=>{
+
     res.render('Your-View',{...res.blog});
+
 });
 ```
 ### For creating its API
 ```javascript
 app.get('/blog/:slug/edit',getPost,(req,res)=>{
+
     res.json({...res.blog});
+
+    // Dont't forget to use JSON.parse() method on Client Side
+
 });
 ```
 > Middleware for this is same as getting single blog post ( you just need to change client side `type` property to `edit` while initializing )
@@ -152,13 +160,19 @@ To know how to create Edit button inside view see -> [setting up views](https://
 ---
 ```javascript
 app.post('/post-delete',deletePost,(req,res)=>{
+
     res.redirect('/blog');
+    
 });
 ```
 ### For creating its API
 ```javascript
 app.post('/post-delete',deletePost,(req,res)=>{
+
     res.josn({deleted:true});
+
+    // Dont't forget to use JSON.parse() method on Client Side
+
 });
 ```
 > You can implement your own function or middleware to allow editing only if user is logged in or is admin
