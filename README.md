@@ -1,5 +1,5 @@
 # blog-easy
-blog-easy integrates a full automated blog system to a website without having to write any code. 
+blog-easy integrates a full automated blog system to a website without having to write any code.
 It consists of :
 
 >A [javascript client library](https://github.com/allkods/blog-easy-client) for the browser (or Node.js client)
@@ -85,7 +85,16 @@ app.get('/blog',getBlog,(req,res)=>{
 
 });
 ```
->Inside the renderable view, we get 5 variables as follows:
+### For creating its API
+```javascript
+app.get('/blog',getBlog,(req,res)=>{
+
+    res.josn({...res.blog});
+
+});
+```
+
+> `res.blog` contains 5 variables as follows:
 1. search -> It holds the search query (can be passed as value of search bar input)
 2. prev -> It holds true or false value which shows whether Previous page is available or not (can be used to make previous button)
 3. next -> It holds true or false value which shows whether Next page is available or not (can be used to make Next button)
@@ -104,13 +113,21 @@ app.get('/blog/:slug',getPost,(req,res)=>{
 
 });
 ```
->Inside the renderable view, we get 4 variables as follows:
+### For creating its API
+```javascript
+app.get('/blog/:slug',getPost,(req,res)=>{
+
+    res.json({...res.blog});
+
+});
+```
+> `res.blog` contains 4 variables as follows:
 1. blogTitle -> It contains title of the post ( can be used in meta tags for SEO )
 2. blogImageSrc -> It contains the image src of the post ( can be used in meta tags for SEO )
 3. blogHtml -> It contains whole of the blog post in HTML format inside a single string ( can be rendered inside any desired div )
 4. slug -> It contains the slug of the post ( can be used to make delete or update button )
 
-To know how to set up the frontend see [setting up views](https://allkods.in/projects/blog-easy#Inside_the_view_of_getting_Single_blog_post)
+To know how to set up the frontend see -> [setting up views](https://allkods.in/projects/blog-easy#Inside_the_view_of_getting_Single_blog_post)
 
 ## For editing blog post
 ---
@@ -119,9 +136,15 @@ app.get('/blog/:slug/edit',getPost,(req,res)=>{
     res.render('Your-View',{...res.blog});
 });
 ```
-> Middleware for this is same as getting single blog post ( you just need to alter client side `type` property while initializing to edit )
+### For creating its API
+```javascript
+app.get('/blog/:slug/edit',getPost,(req,res)=>{
+    res.json({...res.blog});
+});
+```
+> Middleware for this is same as getting single blog post ( you just need to change client side `type` property to `edit` while initializing )
 
-> You can implement your own middleware to allow editing only if user is logged in or is admin
+> You can implement your own function or middleware to allow editing only if user is logged in or is admin
 
 To know how to create Edit button inside view see -> [setting up views](https://allkods.in/projects/blog-easy#How_to_create_edit_button)
 
@@ -132,10 +155,20 @@ app.post('/post-delete',deletePost,(req,res)=>{
     res.redirect('/blog');
 });
 ```
-> You can implement your own middleware to allow editing only if user is logged in or is admin
+### For creating its API
+```javascript
+app.post('/post-delete',deletePost,(req,res)=>{
+    res.josn({deleted:true});
+});
+```
+> You can implement your own function or middleware to allow editing only if user is logged in or is admin
 
 To know how to create Delete button inside view see -> [setting up views](https://allkods.in/projects/blog-easy#How_to_create_delete_button)
 
+## How to use variables which are automatically passed to the views by [blog-essy](https://github.com/allkods/blog-easy)
+---
+Read full documentation here -> [setting up views](https://allkods.in/projects/blog-easy)
+
 ## TO-DO
 ---
-- To make single blog post return more contents for SEO.
+- To make single blog post return keywords and description for SEO.
