@@ -35,7 +35,7 @@ blogEasy({
     app :  /* variable which holds the server */,
     database : /* your mongoDB string url OR object containing mysql connection details */
 
-    // Make sure to white list your hosting ip address on MongoDB ( It will work fine on localhost without white listing)
+    // Make sure to white list your hosting ip address on your database provider if you are not using localhost
 });
 ```
 
