@@ -45,7 +45,7 @@ const table = `CREATE TABLE IF NOT EXISTS blogs(
     title VARCHAR(300) NOT NULL,
     coverImage VARCHAR(400) NOT NULL,
     slug VARCHAR(400) NOT NULL,
-    html VARCHAR(40000),
+    html TEXT,
     tags VARCHAR(400),
     date DATETIME DEFAULT current_timestamp(),
     readableDate VARCHAR(50) NOT NULL,
