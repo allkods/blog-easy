@@ -283,6 +283,46 @@ function myunescape(str){
     
 }
 
+const removeDir = function(path) {
+    if (fs.existsSync(path)) {
+      const files = fs.readdirSync(path)
+  
+      if (files.length > 0) {
+        files.forEach(function(filename) {
+          if (fs.statSync(path + "/" + filename).isDirectory()) {
+            removeDir(path + "/" + filename)
+          } else {
+            fs.unlinkSync(path + "/" + filename)
+          }
+        })
+        fs.rmdirSync(path)
+      } else {
+        fs.rmdirSync(path)
+      }
+    }
+  }
+
+  const copyRemoveDir = function(path,dest) {
+    if (fs.existsSync(path)) {
+      const files = fs.readdirSync(path)
+  
+      if (files.length > 0) {
+        files.forEach(function(filename) {
+          if (fs.statSync(path + "/" + filename).isDirectory()) {
+            copyRemoveDir(path + "/" + filename,dest + "/" + filename)
+          } else {
+            if(!fs.existsSync(dest)) fs.mkdirSync(dest,{recursive:true})
+            fs.copyFileSync(path + "/" + filename,dest + "/" + filename)
+            fs.unlinkSync(path + "/" + filename)
+          }
+        })
+        fs.rmdirSync(path)
+      } else {
+        fs.rmdirSync(path)
+      }
+    }
+  }
+
 
 
 
@@ -374,9 +414,7 @@ module.exports.upload = (req,res,next)=>{
             }
             else if(docType === 'edit'){
                 var old = `./${static_path}/blog/${cusSlug}`;
-                if (fs.existsSync(old)){
-                    fs.renameSync(old,folder);
-                }
+                copyRemoveDir(old,folder);
             }
 
             uploadCoverImage(folder);
@@ -731,25 +769,6 @@ module.exports.deletePost = (req,res,next)=>{
             
         });
     }
-
-    const removeDir = function(path) {
-        if (fs.existsSync(path)) {
-          const files = fs.readdirSync(path)
-      
-          if (files.length > 0) {
-            files.forEach(function(filename) {
-              if (fs.statSync(path + "/" + filename).isDirectory()) {
-                removeDir(path + "/" + filename)
-              } else {
-                fs.unlinkSync(path + "/" + filename)
-              }
-            })
-            fs.rmdirSync(path)
-          } else {
-            fs.rmdirSync(path)
-          }
-        }
-      }
 
     const pathToDir = `./${static_path}/blog/${slug}`;
     removeDir(pathToDir);
