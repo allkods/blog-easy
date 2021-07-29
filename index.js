@@ -42,11 +42,11 @@ const Blog = mongoose.model('blog', blogSchema);
 // MySql creating table query
 const table = `CREATE TABLE IF NOT EXISTS blogs(
     id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    title VARCHAR(200) NOT NULL,
-    coverImage VARCHAR(100) NOT NULL,
-    slug VARCHAR(200) NOT NULL,
-    html VARCHAR(20000),
-    tags VARCHAR(100) ,
+    title VARCHAR(300) NOT NULL,
+    coverImage VARCHAR(400) NOT NULL,
+    slug VARCHAR(400) NOT NULL,
+    html VARCHAR(40000),
+    tags VARCHAR(400),
     date DATETIME DEFAULT current_timestamp(),
     readableDate VARCHAR(50) NOT NULL,
     PRIMARY KEY(id))
