@@ -108,7 +108,7 @@ app.get('/blog',getBlog,(req,res)=>{
 4. page -> It holds the current page number (can be assigned to next or back button by incrementing or decrementing its value by 1 respectively)
 5. posts -> It is an array of posts, each post holds `id`, `title`, `slug`, `coverImage`, `date`, `readableDate`
 
-To know how to set up the frontend view see -> [setting up views](https://allkods.in/projects/blog-easy#Inside_the_view_of_getting_all_Blog_Post)
+To know how to set up the frontend view see -> [setting up views](https://allkods.in/projects/blog-easy#Using_variables_fetched_from_getting_all_blog_post)
 
 
 ## For getting single blog post
@@ -136,7 +136,7 @@ app.get('/blog/:slug',getPost,(req,res)=>{
 3. blogHtml -> It contains whole of the blog post in HTML format inside a single string ( can be rendered inside any desired div )
 4. slug -> It contains the slug of the post ( can be used to make delete or update button )
 
-To know how to set up the frontend see -> [setting up views](https://allkods.in/projects/blog-easy#Inside_the_view_of_getting_Single_blog_post)
+To know how to set up the frontend see -> [setting up views](https://allkods.in/projects/blog-easy#Using_variables_fetched_form_getting_Single_blog_post)
 
 ## For editing blog post
 ---
