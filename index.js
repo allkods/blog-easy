@@ -93,7 +93,7 @@ function empty(data){
 }
 
 // For converting json to html
-function htmlConverter(data,slug){
+function htmlConverter(data,slug,host){
     var str="";
     var imgCounter =0;
     for(var i=0; i<data.length; i++){
@@ -179,13 +179,13 @@ function htmlConverter(data,slug){
                 var name=`${imgCounter++}.png`;
                 var style;
                 if(spl.length === 1){
-                    data[i].style['background'] = `url('/blog/${slug}/${name}')`;
+                    data[i].style['background'] = `url('${host}/blog/${slug}/${name}')`;
                     data[i].style['backgroundSize'] = 'cover';
                     data[i].style['backgroundPosition'] = 'center';
                     style=getStyle(data[i].style);
                     
                 }else{
-                    style=`background : url('/blog/${slug}/${name}');
+                    style=`background : url('${host}/blog/${slug}/${name}');
                             background-size: cover;
                             background-position:center;`
                 }
@@ -196,12 +196,12 @@ function htmlConverter(data,slug){
             case 'coverImage':
                 var style;
                 if(spl.length === 1){
-                    data[i].style['background'] = `url('/blog/${slug}/cover.jpg')`;
+                    data[i].style['background'] = `url('${host}/blog/${slug}/cover.jpg')`;
                     data[i].style['backgroundSize'] = 'cover';
                     data[i].style['backgroundPosition'] = 'center';
                     style=getStyle(data[i].style);
                 }else{
-                    style=`background : url('/blog/${slug}/cover.jpg');
+                    style=`background : url('${host}/blog/${slug}/cover.jpg');
                             background-size: cover;
                             background-position:center;`
                 }
@@ -332,6 +332,7 @@ let mongoose_url;
 let mysql_def;
 let app;
 let mysql_conn;
+let my_host = '';
 
 
 // Function for assigning values to variables
@@ -359,13 +360,14 @@ module.exports.blogEasy = function(obj){
         mongoose.connect(mongoose_url,{ useFindAndModify:false,useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true });
     }
 
+    if(obj.host) my_host = obj.host;
+    my_host = my_host.replace(/\/$/,'');
 }
 
 
 
 // For handling blog post upload
 module.exports.upload = (req,res,next)=>{
-
     if(app === undefined){
         console.log(`app undefined: pass the app variable to blogEasy.app()`);
         res.json({status:"error",msg:"Server Side : app undefined"});
@@ -414,6 +416,7 @@ module.exports.upload = (req,res,next)=>{
             }
             else if(docType === 'edit'){
                 var old = `./${static_path}/blog/${cusSlug}`;
+                if( old !== folder )
                 copyRemoveDir(old,folder);
             }
 
@@ -489,13 +492,13 @@ module.exports.upload = (req,res,next)=>{
                 var date = getRedableDate();
                 var news = docType == 'edit' && cusSlug ? cusSlug : slug;
 
-                Blog.updateOne({slug:news},{title:title,coverImage:`/blog/${slug}/cover.jpg`,slug:slug,html:html,tags:'',readableDate:date,date:Date.now()},{upsert:true},(err,data)=>{
+                Blog.updateOne({slug:news},{title:title,coverImage:`${Host}/blog/${slug}/cover.jpg`,slug:slug,html:html,tags:'',readableDate:date,date:Date.now()},{upsert:true},(err,data)=>{
 
                 });
 
             }else{
 
-                var newi = `/blog/${slug}/cover.jpg`;
+                var newi = `${Host}/blog/${slug}/cover.jpg`;
                 var date = getRedableDate();
 
                 if(docType == 'upload')
@@ -515,7 +518,9 @@ module.exports.upload = (req,res,next)=>{
         json = JSON.parse(json);
         coverImage = getCoverImage(json);
         images = getImages(json);
+        Host = `${req.protocol}://${my_host}`
         
+
         errorHandler(req.body,coverImage,()=>{
 
             while(title[title.length - 1] === ' '){
@@ -536,8 +541,7 @@ module.exports.upload = (req,res,next)=>{
 
             if(docType == 'upload'){
                 postExistCheck(slug,()=>{
-                    html = htmlConverter(json,slug);
-
+                    html = htmlConverter(json,slug,Host);
                     imageHandler(folder);
                     pushToDb();
                     res.json({status:"success",msg:"Published Successfully"});
@@ -548,7 +552,7 @@ module.exports.upload = (req,res,next)=>{
                     res.json({status:"error",msg:"Problem With the script"});
                     return;
                 }
-                html = htmlConverter(json,slug);
+                html = htmlConverter(json,slug,Host);
 
                 imageHandler(folder);
                 pushToDb();
