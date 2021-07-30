@@ -31,7 +31,7 @@ npm i blog-easy
 const { blogEasy, upload, getPost, getBlog, deletePost } = require('blog-easy');
 
 blogEasy({
-    host : /* Host name eg: 'example.com' or '127.0.0.1:8080' */
+    host : /* Host name eg: 'example.com' or '127.0.0.1:8080' */,
     static :  /* your public directory name where the images will be saved */,
     app :  /* variable which holds the server */,
     database : /* your mongoDB string url OR object containing mysql connection details */
@@ -46,8 +46,8 @@ const app=express();
 const { blogEasy, upload, getPost, getBlog, deletePost } = require('blog-easy');
 
 blogEasy({
-    host : '127.0.0.1:8080' // replace with your own host
-    static : 'public' // replace with your own public directory
+    host : '127.0.0.1:8080', // replace with your own host
+    static : 'public', // replace with your own public directory
     app : app,
     database : {
         host: 'your_host',
@@ -66,8 +66,8 @@ const app=express();
 const { blogEasy, upload, getPost, getBlog, deletePost } = require('blog-easy');
 
 blogEasy({
-    host : '127.0.0.1:8080' // replace with your own host
-    static : 'public' // replace with your own public directory
+    host : '127.0.0.1:8080', // replace with your own host
+    static : 'public', // replace with your own public directory
     app : app,
     database : 'your mongoDB string url'
 });
