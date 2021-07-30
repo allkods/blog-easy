@@ -31,6 +31,7 @@ npm i blog-easy
 const { blogEasy, upload, getPost, getBlog, deletePost } = require('blog-easy');
 
 blogEasy({
+    host : /* Host name eg: 'example.com' or '127.0.0.1:8080' */
     static :  /* your public directory name where the images will be saved */,
     app :  /* variable which holds the server */,
     database : /* your mongoDB string url OR object containing mysql connection details */
@@ -47,7 +48,8 @@ const app=express();
 const { blogEasy, upload, getPost, getBlog, deletePost } = require('blog-easy');
 
 blogEasy({
-    static : 'public'
+    host : '127.0.0.1:8080' // replace with your own host
+    static : 'public' // replace with your own public directory
     app : app,
     database : {
         host: 'your_host',
@@ -66,7 +68,8 @@ const app=express();
 const { blogEasy, upload, getPost, getBlog, deletePost } = require('blog-easy');
 
 blogEasy({
-    static : 'public'
+    host : '127.0.0.1:8080' // replace with your own host
+    static : 'public' // replace with your own public directory
     app : app,
     database : 'your mongoDB string url'
 });
@@ -93,7 +96,7 @@ app.get('/blog',getBlog,(req,res)=>{
 
     res.josn({...res.blog});
 
-    // Dont't forget to use JSON.parse() method on Client Side
+    // Dont't forget to parse the string to JSON if you receive a string on client side
 
 });
 ```
@@ -123,7 +126,7 @@ app.get('/blog/:slug',getPost,(req,res)=>{
 
     res.json({...res.blog});
 
-    // Dont't forget to use JSON.parse() method on Client Side
+    // Dont't forget to parse the string to JSON if you receive a string on client side
 
 });
 ```
@@ -150,7 +153,7 @@ app.get('/blog/:slug/edit',getPost,(req,res)=>{
 
     res.json({...res.blog});
 
-    // Dont't forget to use JSON.parse() method on Client Side
+    // Dont't forget to parse the string to JSON if you receive a string on client side
 
 });
 ```
@@ -175,7 +178,7 @@ app.post('/post-delete',deletePost,(req,res)=>{
 
     res.josn({deleted:true});
 
-    // Dont't forget to use JSON.parse() method on Client Side
+    // Dont't forget to parse the string to JSON if you receive a string on client side
 
 });
 ```
