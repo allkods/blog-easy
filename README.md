@@ -35,8 +35,6 @@ blogEasy({
     static :  /* your public directory name where the images will be saved */,
     app :  /* variable which holds the server */,
     database : /* your mongoDB string url OR object containing mysql connection details */
-
-    // Make sure to white list your hosting ip address on your database provider if you are not using localhost
 });
 ```
 
@@ -157,7 +155,7 @@ app.get('/blog/:slug/edit',getPost,(req,res)=>{
 
 });
 ```
-> Middleware for this is same as getting single blog post ( you just need to change client side `type` property to `edit` while initializing )
+> Middleware for this is same as getting single blog post ( you just need to change client side `type` property to `edit` while using [blog-easy-client](https://github.com/allkods/blog-easy-client) )
 
 > You can implement your own function or middleware to allow editing only if user is logged in or is admin
 
