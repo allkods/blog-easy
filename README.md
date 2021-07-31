@@ -2,7 +2,7 @@
 blog-easy integrates a full automated blog system to a website without having to write any code.
 It consists of :
 
->A [javascript client library](https://github.com/allkods/blog-easy-client) for the browser (or Node.js client)
+>A [javascript client library](https://github.com/allkods/blog-easy-client#readme) for the browser (or Node.js client)
 ### Features
 ---
 - It adds a simple yet powerful Blog content management system (cms) to your client side page
@@ -92,7 +92,7 @@ app.get('/blog',getBlog,(req,res)=>{
 ```javascript
 app.get('/blog',getBlog,(req,res)=>{
 
-    res.josn({...res.blog});
+    res.json({...res.blog});
 
     // Dont't forget to parse the string to JSON if you receive a string on client side
 
@@ -155,7 +155,7 @@ app.get('/blog/:slug/edit',getPost,(req,res)=>{
 
 });
 ```
-> Middleware for this is same as getting single blog post ( you just need to change client side `type` property to `edit` while using [blog-easy-client](https://github.com/allkods/blog-easy-client) )
+> Middleware for this is same as getting single blog post ( you just need to change client side `type` property to `edit` while using [blog-easy-client](https://github.com/allkods/blog-easy-client#readme) )
 
 > You can implement your own function or middleware to allow editing only if user is logged in or is admin
 
@@ -174,7 +174,7 @@ app.post('/post-delete',deletePost,(req,res)=>{
 ```javascript
 app.post('/post-delete',deletePost,(req,res)=>{
 
-    res.josn({deleted:true});
+    res.json({deleted:true});
 
     // Dont't forget to parse the string to JSON if you receive a string on client side
 
@@ -184,8 +184,9 @@ app.post('/post-delete',deletePost,(req,res)=>{
 
 To know how to create Delete button inside view see -> [setting up views](https://allkods.in/projects/blog-easy#How_to_create_delete_button)
 
-## How to use variables which are automatically passed to the views
-Read full documentation here -> [setting up views](https://allkods.in/projects/blog-easy)
+> ### This package works with [blog-easy-client](https://github.com/allkods/blog-easy-client#readme) which is a client side CMS ( content management system) library for Uploading, Editing, Altering blog Post.
+
+> ### To know how to use passed variables for setting up the views : visit -> [setting up views](https://allkods.in/projects/blog-easy)
 
 ## TO-DO
 ---
