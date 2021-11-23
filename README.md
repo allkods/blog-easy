@@ -42,7 +42,7 @@ blogEasy({
 const express=require('express');
 const app=express();
 
-const { blogEasy, upload, getPost, getBlog, deletePost } = require('blog-easy');
+const { blogEasy, upload, getPost, getBlog, deletePost, getRecent } = require('blog-easy');
 
 blogEasy({
     static : 'public', // replace with your own public directory
@@ -105,7 +105,17 @@ app.get('/blog',getBlog,(req,res)=>{
 
 To know how to set up the frontend view see -> [setting up views](https://allkods.in/projects/blog-easy#Using_variables_fetched_from_getting_all_blog_post)
 
-
+## Function for getting Recent posts
+---
+```javascript
+    getRecent(number_of_posts,callback_function)
+```
+### Example
+```javascript
+    getRecent(5,function(data){
+        res.render('Your_view',{recent:data})
+    })
+```
 ## For getting single blog post
 ---
 ```javascript
