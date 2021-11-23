@@ -31,7 +31,6 @@ npm i blog-easy
 const { blogEasy, upload, getPost, getBlog, deletePost } = require('blog-easy');
 
 blogEasy({
-    host : /* Host name eg: 'example.com' or '127.0.0.1:8080' */,
     static :  /* your public directory name where the images will be saved */,
     app :  /* variable which holds the server */,
     database : /* your mongoDB string url OR object containing mysql connection details */
@@ -46,7 +45,6 @@ const app=express();
 const { blogEasy, upload, getPost, getBlog, deletePost } = require('blog-easy');
 
 blogEasy({
-    host : '127.0.0.1:8080', // replace with your own host
     static : 'public', // replace with your own public directory
     app : app,
     database : {
@@ -66,7 +64,6 @@ const app=express();
 const { blogEasy, upload, getPost, getBlog, deletePost } = require('blog-easy');
 
 blogEasy({
-    host : '127.0.0.1:8080', // replace with your own host
     static : 'public', // replace with your own public directory
     app : app,
     database : 'your mongoDB string url'
@@ -104,7 +101,7 @@ app.get('/blog',getBlog,(req,res)=>{
 2. prev -> It holds true or false value which shows whether Previous page is available or not (can be used to make previous button)
 3. next -> It holds true or false value which shows whether Next page is available or not (can be used to make Next button)
 4. page -> It holds the current page number (can be assigned to next or back button by incrementing or decrementing its value by 1 respectively)
-5. posts -> It is an array of posts, each post holds `id`, `title`, `slug`, `coverImage`, `date`, `readableDate`
+5. posts -> It is an array of posts, each post holds `id`, `title`, `slug`, `coverImage`, `date`, `readableDate`, `hit`
 
 To know how to set up the frontend view see -> [setting up views](https://allkods.in/projects/blog-easy#Using_variables_fetched_from_getting_all_blog_post)
 
@@ -133,6 +130,8 @@ app.get('/blog/:slug',getPost,(req,res)=>{
 2. blogImageSrc -> It contains the image src of the post ( can be used in meta tags for SEO )
 3. blogHtml -> It contains whole of the blog post in HTML format inside a single string ( can be rendered inside any desired div )
 4. slug -> It contains the slug of the post ( can be used to make delete or update button )
+5. hit -> It contains number of times the post is hit or visited.
+6. tags -> It contains tags of the post ( can be used in meta tags for SEO )
 
 To know how to set up the frontend see -> [setting up views](https://allkods.in/projects/blog-easy#Using_variables_fetched_form_getting_Single_blog_post)
 
@@ -190,4 +189,4 @@ To know how to create Delete button inside view see -> [setting up views](https:
 
 ## TO-DO
 ---
-- To make single blog post return keywords and description for SEO.
+- To make single blog post return description for SEO.

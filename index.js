@@ -34,6 +34,10 @@ const blogSchema = new mongoose.Schema({
     readableDate: {
         type: String,
         required: true
+    },
+    hit:{
+        type: Number,
+        default : 0
     }
 });
 const Blog = mongoose.model('blog', blogSchema);
@@ -49,6 +53,7 @@ const table = `CREATE TABLE IF NOT EXISTS blogs(
     tags VARCHAR(400),
     date DATETIME DEFAULT current_timestamp(),
     readableDate VARCHAR(50) NOT NULL,
+    hit SMALLINT UNSIGNED NOT NULL DEFAULT 0,
     PRIMARY KEY(id))
     ENGINE=INNODB,
     CHARACTER SET utf8,
@@ -93,7 +98,7 @@ function empty(data){
 }
 
 // For converting json to html
-function htmlConverter(data,slug,host){
+function htmlConverter(data,slug,host,tags){
     var str="";
     var imgCounter =0;
     for(var i=0; i<data.length; i++){
@@ -179,33 +184,25 @@ function htmlConverter(data,slug,host){
                 var name=`${imgCounter++}.png`;
                 var style;
                 if(spl.length === 1){
-                    data[i].style['background'] = `url('${host}/blog/${slug}/${name}')`;
-                    data[i].style['backgroundSize'] = 'cover';
-                    data[i].style['backgroundPosition'] = 'center';
                     style=getStyle(data[i].style);
+                    str += `<${data[i].tag} class="${cl}" style="${style}" src="${host}/blog/${slug}/${name}">\n`;
                     
                 }else{
-                    style=`background : url('${host}/blog/${slug}/${name}');
-                            background-size: cover;
-                            background-position:center;`
+                    str += `<${data[i].tag} class="${cl}" src="${host}/blog/${slug}/${name}">\n`;
                 }
-                str += `<${data[i].tag} class="${cl}" style="${style}">\n`;
+
                 str += `</${data[i].tag}>`;
             break;
 
             case 'coverImage':
                 var style;
                 if(spl.length === 1){
-                    data[i].style['background'] = `url('${host}/blog/${slug}/cover.jpg')`;
-                    data[i].style['backgroundSize'] = 'cover';
-                    data[i].style['backgroundPosition'] = 'center';
                     style=getStyle(data[i].style);
+                    str += `<${data[i].tag} class="${cl}" style="${style}" src="${host}/blog/${slug}/cover.jpg">\n`;
                 }else{
-                    style=`background : url('${host}/blog/${slug}/cover.jpg');
-                            background-size: cover;
-                            background-position:center;`
+                    str += `<${data[i].tag} class="${cl}" src="${host}/blog/${slug}/cover.jpg">\n`;
                 }
-                str += `<${data[i].tag} class="${cl}" style="${style}">\n`;
+                
                 str += `</${data[i].tag}>`;
             break;
 
@@ -224,6 +221,7 @@ function htmlConverter(data,slug,host){
         }
 
     }
+    str += `<input type="hidden" class="BEtags" value="${tags}" />`
     return str;
 }
 
@@ -340,7 +338,7 @@ module.exports.blogEasy = function(obj){
     static_path = obj.static;
 
     app =obj.app;
-    app.use(express.urlencoded({limit:'20mb',extended: true }));
+    app.use(express.urlencoded({limit:'30mb',extended: true }));
 
     if(typeof(obj.database) === 'object'){
         mysql_def = obj.database;
@@ -357,11 +355,8 @@ module.exports.blogEasy = function(obj){
         });
     }else{
         mongoose_url = obj.database;
-        mongoose.connect(mongoose_url,{ useFindAndModify:false,useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true });
+        mongoose.connect(mongoose_url,{ useUnifiedTopology: true, useNewUrlParser: true });
     }
-
-    if(obj.host) my_host = obj.host;
-    my_host = my_host.replace(/\/$/,'');
 }
 
 
@@ -492,7 +487,7 @@ module.exports.upload = (req,res,next)=>{
                 var date = getRedableDate();
                 var news = docType == 'edit' && cusSlug ? cusSlug : slug;
 
-                Blog.updateOne({slug:news},{title:title,coverImage:`${Host}/blog/${slug}/cover.jpg`,slug:slug,html:html,tags:'',readableDate:date,date:Date.now()},{upsert:true},(err,data)=>{
+                Blog.updateOne({slug:news},{title:title,coverImage:`${Host}/blog/${slug}/cover.jpg`,slug:slug,html:html,tags:tags,readableDate:date,date:Date.now()},{upsert:true},(err,data)=>{
 
                 });
 
@@ -502,9 +497,9 @@ module.exports.upload = (req,res,next)=>{
                 var date = getRedableDate();
 
                 if(docType == 'upload')
-                var q2=`INSERT INTO blogs(title,coverImage,slug,html,tags,readableDate) VALUES('${myescape(title)}','${newi}','${slug}','${myescape(html)}','','${date}');`;
+                var q2=`INSERT INTO blogs(title,coverImage,slug,html,tags,readableDate) VALUES('${myescape(title)}','${newi}','${slug}','${myescape(html)}','${tags}','${date}');`;
                 else
-                var q2=`UPDATE blogs SET title='${myescape(title)}', coverImage='${newi}', slug='${slug}', html='${myescape(html)}', tags='', readableDate='${date}' WHERE slug='${cusSlug}';`;
+                var q2=`UPDATE blogs SET title='${myescape(title)}', coverImage='${newi}', slug='${slug}', html='${myescape(html)}', tags='${tags}', readableDate='${date}' WHERE slug='${cusSlug}';`;
                 mysql_conn.query(q2,(error,result,fields)=>{
                 
                 });
@@ -513,12 +508,26 @@ module.exports.upload = (req,res,next)=>{
             
         }
 
-        var { title, json, docType, cusSlug } = req.body;
+        var { title, json, tags, docType, cusSlug } = req.body;
         let slug,html;
         json = JSON.parse(json);
         coverImage = getCoverImage(json);
         images = getImages(json);
-        Host = `${req.protocol}://${my_host}`
+        ntag= tags.split(',');
+        ntag = ntag.map(val=>{
+            return val.trim()
+            .replace(/[\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E]/g,"")
+            .replace(/[ ]+/g,'-')
+            .toLowerCase();
+        })
+
+        tags = ntag.join(',')
+
+        var prot=req.protocol
+        if(req.headers['x-forwarded-proto']){
+            prot = req.headers['x-forwarded-proto']
+        }
+        Host = `${prot}://${req.headers.host}`
         
 
         errorHandler(req.body,coverImage,()=>{
@@ -541,7 +550,7 @@ module.exports.upload = (req,res,next)=>{
 
             if(docType == 'upload'){
                 postExistCheck(slug,()=>{
-                    html = htmlConverter(json,slug,Host);
+                    html = htmlConverter(json,slug,Host,tags);
                     imageHandler(folder);
                     pushToDb();
                     res.json({status:"success",msg:"Published Successfully"});
@@ -552,11 +561,23 @@ module.exports.upload = (req,res,next)=>{
                     res.json({status:"error",msg:"Problem With the script"});
                     return;
                 }
-                html = htmlConverter(json,slug,Host);
+                if(cusSlug != slug){
+                    postExistCheck(slug,()=>{
 
+                        html = htmlConverter(json,slug,Host,tags);
+                        imageHandler(folder);
+                        pushToDb();
+                        res.json({status:"success",msg:"Updated Successfully",newSlug: slug});
+
+                    })
+                }else{
+
+                html = htmlConverter(json,slug,Host,tags);
                 imageHandler(folder);
                 pushToDb();
                 res.json({status:"success",msg:"Updated Successfully",newSlug: slug});
+
+                }
 
             }
            
@@ -574,23 +595,32 @@ module.exports.getPost = (req,res,next)=>{
         blogHtml : null,
         blogTitle : null,
         blogImageSrc : null,
-        slug : null
+        slug : null,
+        hit : 0,
+        tags : null
     }
 
     function query(func){
 
         if(mongoose_url){
-            Blog.findOne({slug:slug},(err,data)=>{
+
+            Blog.findOneAndUpdate({slug:slug},{$inc:{hit:1}},{new:true},(err,data)=>{
                 if(data){
-    
                     blog.blogHtml = data.html;
                     blog.blogTitle = data.title;
                     blog.blogImageSrc = data.coverImage;
                     blog.slug = data.slug;
+                    blog.hit = data.hit
+                    blog.tags = data.tags.replace(/-/g," ")
                 }
                 return func();
-            });
+            })
         }else{
+            var read=`UPDATE blogs SET hit = hit + 1 WHERE slug = '${myescape(slug)}'`;
+            mysql_conn.query(read,(error,result,fields)=>{
+                
+            })
+
             var q=`SELECT * FROM blogs WHERE slug = '${myescape(slug)}'`;
             mysql_conn.query(q,(error,result,fields)=>{
                 if(result.length > 0){
@@ -599,6 +629,8 @@ module.exports.getPost = (req,res,next)=>{
                     blog.blogTitle = myunescape(result[0].title);
                     blog.blogImageSrc = result[0].coverImage;
                     blog.slug = result[0].slug;
+                    blog.hit = result[0].hit;
+                    blog.tags = result[0].tags.replace(/-/g," ");
                 }
                 return func();
             });
@@ -646,7 +678,7 @@ module.exports.getBlog = (req,res,next)=>{
                 Blog.find({$or:[
                     { slug: new RegExp(`.*${str}.*`,`i`) },
                     { tags: new RegExp(`.*${str}.*`,`i`) }
-                ]},{title:true,coverImage:true,date:true,readableDate:true,slug:true},(err,data)=>{
+                ]},{title:true,coverImage:true,date:true,readableDate:true,slug:true,hit:true},(err,data)=>{
                     if(data === undefined || data === null) data=[];
             
                         if(data.length === 11){
@@ -664,7 +696,7 @@ module.exports.getBlog = (req,res,next)=>{
         
                 }else{
         
-                var q=`SELECT id,title,coverImage,date,readableDate,slug FROM blogs WHERE
+                var q=`SELECT id,title,coverImage,date,readableDate,slug,hit FROM blogs WHERE
                 slug LIKE '%${str}%' OR 
                 tags LIKE '%${str}%' LIMIT ${(req.query.page-1)*10},${req.query.page * 10 + 1};`;
                 mysql_conn.query(q,(err,data,fields)=>{
@@ -704,7 +736,7 @@ module.exports.getBlog = (req,res,next)=>{
 
             if(mongoose_url){
 
-                Blog.find({},{title:true,coverImage:true,date:true,readableDate:true,slug:true},(err,data)=>{
+                Blog.find({},{title:true,coverImage:true,date:true,readableDate:true,slug:true,hit:true},(err,data)=>{
         
                     if(data === undefined || data === null) data = [];
         
@@ -723,7 +755,7 @@ module.exports.getBlog = (req,res,next)=>{
         
                 }else{
         
-                var q=`SELECT id,title,coverImage,date,readableDate,slug FROM blogs
+                var q=`SELECT id,title,coverImage,date,readableDate,slug,hit FROM blogs
                 LIMIT ${(req.query.page-1)*10},${req.query.page * 10 + 1};`;
         
                 mysql_conn.query(q,(err,data,fields)=>{
@@ -778,5 +810,37 @@ module.exports.deletePost = (req,res,next)=>{
     removeDir(pathToDir);
 
     next();
+
+}
+
+module.exports.getRecent = function(limit,func){
+
+        if(mongoose_url){
+            Blog.find({},{title:true,coverImage:true,date:true,readableDate:true,slug:true,hit:true},(err,data)=>{
+    
+                if(data === undefined || data === null) data = [];
+
+                return func(data);
+
+            }).sort({id:-1}).limit(limit);
+    
+            }else{
+    
+            var q=`SELECT id,title,coverImage,date,readableDate,slug,hit FROM blogs ORDER BY id DESC
+            LIMIT ${limit};`;
+    
+           mysql_conn.query(q,(err,data,fields)=>{
+
+    
+                if(data === undefined ||data === null ) data =[]
+    
+                for(var i=0; i<data.length; i++){
+                    data[i].title = myunescape(data[i].title);
+                }
+
+                return func(data);
+
+            });
+            }
 
 }
