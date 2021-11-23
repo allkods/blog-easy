@@ -28,7 +28,7 @@ npm i blog-easy
 ---
 
 ```javascript
-const { blogEasy, upload, getPost, getBlog, deletePost } = require('blog-easy');
+const { blogEasy, upload, getPost, getBlog, deletePost, getRecent } = require('blog-easy');
 
 blogEasy({
     static :  /* your public directory name where the images will be saved */,
@@ -61,7 +61,7 @@ blogEasy({
 const express=require('express');
 const app=express();
 
-const { blogEasy, upload, getPost, getBlog, deletePost } = require('blog-easy');
+const { blogEasy, upload, getPost, getBlog, deletePost, getRecent } = require('blog-easy');
 
 blogEasy({
     static : 'public', // replace with your own public directory
